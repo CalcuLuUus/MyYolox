@@ -12,7 +12,6 @@ from pycocotools.coco import COCO
 from ..dataloading import get_yolox_datadir
 from .datasets_wrapper import Dataset
 
-import torch
 
 class COCODataset(Dataset):
     """
@@ -43,7 +42,7 @@ class COCODataset(Dataset):
         self.data_dir = data_dir
         self.json_file = json_file
 
-        self.coco = COCO(os.path.join(self.data_dir, "annotations", self.json_file)) #COCO/annotations/instances_train2017.json
+        self.coco = COCO(os.path.join(self.data_dir, "annotations", self.json_file))
         self.ids = self.coco.getImgIds()
         self.class_ids = sorted(self.coco.getCatIds())
         cats = self.coco.loadCats(self.coco.getCatIds())
@@ -157,13 +156,13 @@ class COCODataset(Dataset):
         return self.annotations[index][0]
 
     '''
-
-    need modify
-
-    '''
+     need modify
+     '''
     def load_resized_img(self, index):
         img = self.load_image(index)
-
+        '''
+        debug
+        '''
         for per_img in img:
             try:
                 num = per_img.shape
@@ -171,48 +170,37 @@ class COCODataset(Dataset):
                 print("\nINDEX = {}, name = {}".format(index, self.annotations[index][3]))
 
         r = min(self.img_size[0] / img[0].shape[0], self.img_size[1] / img[0].shape[1])
-        '''
-        resized_img = cv2.resize(
-            img,
-            (int(img.shape[1] * r), int(img.shape[0] * r)),
-            interpolation=cv2.INTER_LINEAR,
-        ).astype(np.uint8)
-        '''
         resized_img = [cv2.resize(
             per_img,
             (int(per_img.shape[1] * r), int(per_img.shape[0] * r)),
             interpolation=cv2.INTER_LINEAR,
         ).astype(np.uint8) for per_img in img]
-        return resized_img
-
-
+        return np.stack(resized_img)
 
     def load_image(self, index):
         # with open("debug/idxToAnno.txt", "a") as f:
         #     f.write("idx = {}, name = {}\n".format(index, self.annotations[index][3]))
         file_name = self.annotations[index][3]
-        img_file = os.path.join(self.data_dir, self.name, file_name) #COCO/val2017/
+        img_file = os.path.join(self.data_dir, self.name, file_name)  # COCO/val2017/
         '''
         img = cv2.imread(img_file)
         assert img is not None
-
         return img
         '''
         img = []
-        img_names = ["gt_input.png"] + ["retrain_structure_" + "{:.2f}".format(0.2 + i * 0.4) + ".png" for i in range(0, 4)]
+        img_names = ["gt_input.png"] + ["retrain_structure_" + "{:.2f}".format(0.2 + i * 0.4) + ".png" for i in
+                                        range(0, 4)]
         for img_name in img_names:
             whole_name = os.path.join(img_file, img_name)
             img.append(cv2.imread(whole_name))
-        return img
-
-
+        return np.stack(img)
 
     '''
     need modify
     '''
+
     def pull_item(self, index):
         id_ = self.ids[index]
-
         res, img_info, resized_info, _ = self.annotations[index]
         if self.imgs is not None:
             pad_img = self.imgs[index]
@@ -243,8 +231,8 @@ class COCODataset(Dataset):
             img_id (int): same as the input index. Used for evaluation.
         """
         img, target, img_info, img_id = self.pull_item(index)
-
-        if self.preproc is not None: ## data\data_augment\valtransform
+        target = np.stack([target for i in range(len(img))])
+        if self.preproc is not None:  ## data\data_augment\valtransform
             for i in range(len(img)):
-                img[i], target = self.preproc(img[i], target, self.input_dim)
+                img[i], target[i] = self.preproc(img[i], target[i], self.input_dim)
         return img, target, img_info, img_id

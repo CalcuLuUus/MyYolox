@@ -29,6 +29,8 @@ from yolox.utils import (
     synchronize
 )
 
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 class Trainer:
     def __init__(self, exp, args):
@@ -91,42 +93,38 @@ class Trainer:
         iter_start_time = time.time()
 
         inps, targets = self.prefetcher.next()
-
-        # '''
-        # modify
-        # '''
-        # inps = torch.cat(inps, 0)
-
         inps = inps.to(self.data_type)
         targets = targets.to(self.data_type)
         targets.requires_grad = False
-        inps, targets = self.exp.preprocess(inps, targets, self.input_size)
-        data_end_time = time.time()
-
-        with torch.cuda.amp.autocast(enabled=self.amp_training):
-            outputs = self.model(inps, targets)
-
-        loss = outputs["total_loss"]
-
-        self.optimizer.zero_grad()
-        self.scaler.scale(loss).backward()
-        self.scaler.step(self.optimizer)
-        self.scaler.update()
-
-        if self.use_model_ema:
-            self.ema_model.update(self.model)
-
-        lr = self.lr_scheduler.update_lr(self.progress_in_iter + 1)
-        for param_group in self.optimizer.param_groups:
-            param_group["lr"] = lr
-
-        iter_end_time = time.time()
-        self.meter.update(
-            iter_time=iter_end_time - iter_start_time,
-            data_time=data_end_time - iter_start_time,
-            lr=lr,
-            **outputs,
-        )
+        print(inps.shape)
+        print(targets.shape)
+        # inps, targets = self.exp.preprocess(inps, targets, self.input_size)
+        # data_end_time = time.time()
+        #
+        # with torch.cuda.amp.autocast(enabled=self.amp_training):
+        #     outputs = self.model(inps, targets)
+        #
+        # loss = outputs["total_loss"]
+        #
+        # self.optimizer.zero_grad()
+        # self.scaler.scale(loss).backward()
+        # self.scaler.step(self.optimizer)
+        # self.scaler.update()
+        #
+        # if self.use_model_ema:
+        #     self.ema_model.update(self.model)
+        #
+        # lr = self.lr_scheduler.update_lr(self.progress_in_iter + 1)
+        # for param_group in self.optimizer.param_groups:
+        #     param_group["lr"] = lr
+        #
+        # iter_end_time = time.time()
+        # self.meter.update(
+        #     iter_time=iter_end_time - iter_start_time,
+        #     data_time=data_end_time - iter_start_time,
+        #     lr=lr,
+        #     **outputs,
+        # )
 
     def before_train(self):
         logger.info("args: {}".format(self.args))
@@ -156,9 +154,9 @@ class Trainer:
         )
         logger.info("init prefetcher, this might take one minute or less...")
         self.prefetcher = DataPrefetcher(self.train_loader)
-        logger.info("init prefetcher complete")
         # max_iter means iters per epoch
         self.max_iter = len(self.train_loader)
+
         self.lr_scheduler = self.exp.get_lr_scheduler(
             self.exp.basic_lr_per_img * self.args.batch_size, self.max_iter
         )

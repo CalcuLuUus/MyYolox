@@ -86,29 +86,29 @@ create subtrainset annotation
 '''
 check introsmooth results
 '''
-import cv2
-from tqdm import trange
-dir = './datasets/COCO/train2017smo'
-filenames = os.listdir(dir)
-
-img_names = ["gt_input.png"] + ["retrain_structure_" + "{:.2f}".format(0.2 + i * 0.4) + ".png" for i in range(0, 4)]
-errors = []
-for i in trange(len(filenames)):
-    filename = filenames[i]
-    filedir = os.path.join(dir, filename)
-    for img_name in img_names:
-        target = os.path.join(filedir, img_name)
-        image = cv2.imread(target)
-        # print("{} : ".format(target), end='')
-        try:
-            num = image.shape
-            # print("{}\t{} / {}".format(image.shape, i+1, len(filenames)))
-        except AttributeError:
-            print(target)
-            errors.append(target)
-print(len(errors))
-for error in errors:
-    print(error)
+# import cv2
+# from tqdm import trange
+# dir = './datasets/COCO/train2017smo'
+# filenames = os.listdir(dir)
+#
+# img_names = ["gt_input.png"] + ["retrain_structure_" + "{:.2f}".format(0.2 + i * 0.4) + ".png" for i in range(0, 4)]
+# errors = []
+# for i in trange(len(filenames)):
+#     filename = filenames[i]
+#     filedir = os.path.join(dir, filename)
+#     for img_name in img_names:
+#         target = os.path.join(filedir, img_name)
+#         image = cv2.imread(target)
+#         # print("{} : ".format(target), end='')
+#         try:
+#             num = image.shape
+#             # print("{}\t{} / {}".format(image.shape, i+1, len(filenames)))
+#         except AttributeError:
+#             print(target)
+#             errors.append(target)
+# print(len(errors))
+# for error in errors:
+#     print(error)
 
 
 
@@ -145,3 +145,5 @@ move subtrainset
 # for i in trange(len(filename)):
 #     if(filename[i][-3:] == "jpg"):
 #         shutil.move(srcdir + '/' + filename[i], targetdir)
+
+print("hello world")

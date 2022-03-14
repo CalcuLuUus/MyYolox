@@ -73,12 +73,12 @@ class COCOEvaluator:
         """
         # TODO half to amp_test
         tensor_type = torch.cuda.HalfTensor if half else torch.cuda.FloatTensor
-        model = model.eval() #torch方法，评估模式，返回model本身，后面接with no grad
+        model = model.eval()
         if half:
             model = model.half()
         ids = []
         data_list = []
-        progress_bar = tqdm if is_main_process() else iter #进度条
+        progress_bar = tqdm if is_main_process() else iter
 
         inference_time = 0
         nms_time = 0
@@ -94,26 +94,9 @@ class COCOEvaluator:
             model(x)
             model = model_trt
 
-        #for k, v in enumerate -> (index, value)
-        '''
-        
-        改动部分
-        1.dataloader(done)
-        2.output = model(img)
-        结果在此合并
-        
-        '''
-        # with open("debug/dataloaderinfo.txt", "a") as f:
-        #     for cur_iter, (imgs, _, info_imgs, ids) in enumerate(
-        #             progress_bar(self.dataloader)
-        #     ):
-        #         f.write("\nimg = {}\n imgsize = {} * {} \n \n info_imgs = {}\n infosize = {} * {}\n\nids =  {}, idsize = {}".format(
-        #             imgs,len(imgs), imgs[0].shape, info_imgs, len(info_imgs), info_imgs[0].shape, ids, ids.shape))
-
         for cur_iter, (imgs, _, info_imgs, ids) in enumerate(
             progress_bar(self.dataloader)
         ):
-            imgs = torch.cat(imgs, 0)
             with torch.no_grad():
                 imgs = imgs.type(tensor_type)
 
@@ -130,29 +113,14 @@ class COCOEvaluator:
                     infer_end = time_synchronized()
                     inference_time += infer_end - start
 
-                # with open("debug/preoutput.txt", "a") as fpre:
-                #     fpre.write("\n len = {} \n content = {}\n".format(
-                #         outputs.shape, outputs
-                #     ))
-
                 outputs = postprocess(
                     outputs, self.num_classes, self.confthre, self.nmsthre
                 )
-
-                # with open("debug/postoutput.txt", "a") as fpost:
-                #     fpost.write("\n len = {} * {} \n content = {}\n".format(
-                #         len(outputs), outputs[0].shape, outputs
-                #     ))
                 if is_time_record:
                     nms_end = time_synchronized()
                     nms_time += nms_end - infer_end
 
-
             data_list.extend(self.convert_to_coco_format(outputs, info_imgs, ids))
-            # with open("debug/output_coco.txt", "a") as fcoco:
-            #     fcoco.write("\n len = {} \n content = {}\n".format(
-            #         len(self.convert_to_coco_format(outputs, info_imgs, ids)), self.convert_to_coco_format(outputs, info_imgs, ids)
-            #     ))
 
         statistics = torch.cuda.FloatTensor([inference_time, nms_time, n_samples])
         if distributed:

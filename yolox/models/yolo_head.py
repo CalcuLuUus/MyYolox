@@ -14,6 +14,9 @@ from yolox.utils import bboxes_iou
 from .losses import IOUloss
 from .network_blocks import BaseConv, DWConv
 
+# import os
+# os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
 
 class YOLOXHead(nn.Module):
     def __init__(

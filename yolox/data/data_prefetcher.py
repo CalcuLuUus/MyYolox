@@ -23,10 +23,6 @@ class DataPrefetcher:
     def preload(self):
         try:
             self.next_input, self.next_target, _, _ = next(self.loader)
-            if(type(self.next_input) == type([])):
-                self.next_input = torch.cat(self.next_input, 0)
-            if(type(self.next_target) == type([])):
-                self.next_target = torch.cat(self.next_target, 0)
         except StopIteration:
             self.next_input = None
             self.next_target = None
