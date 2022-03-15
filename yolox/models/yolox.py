@@ -24,29 +24,25 @@ class YOLOX(nn.Module):
             head = YOLOXHead(80)
 
         self.backbone = backbone
-        self.head = head
 
-        channels = [128, 256, 512] # yolox-s 0.5*width
+        channels = [128, 256, 512]  # yolox-s 0.5*width
         self.process_backbone = nn.ModuleList()
         for channel in channels:
             self.process_backbone.append(
                 nn.Sequential(
                     nn.Conv2d(
-                        in_channels=channel*5,
-                        out_channels=channel*2,
-                        kernel_size=1
-                    ),
-                    nn.BatchNorm2d(channel*2),
-                    nn.SiLU(),
-                    nn.Conv2d(
-                        in_channels=channel*2,
+                        in_channels=channel * 5,
                         out_channels=channel,
                         kernel_size=1
                     ),
                     nn.BatchNorm2d(channel),
-                    nn.SiLU()
+                    nn.SiLU(inplace=True)
                 )
             )
+
+        self.head = head
+
+
 
     def forward(self, x, targets=None):
         # fpn output content features of [dark3, dark4, dark5]

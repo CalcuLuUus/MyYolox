@@ -107,9 +107,10 @@ class COCOEvaluator:
                     start = time.time()
 
                 outputs = model(imgs)
+
                 if decoder is not None:
                     outputs = decoder(outputs, dtype=outputs.type())
-    
+
                 if is_time_record:
                     infer_end = time_synchronized()
                     inference_time += infer_end - start
@@ -117,6 +118,7 @@ class COCOEvaluator:
                 outputs = postprocess(
                     outputs, self.num_classes, self.confthre, self.nmsthre
                 )
+                # print("pro output", outputs)
                 if is_time_record:
                     nms_end = time_synchronized()
                     nms_time += nms_end - infer_end
@@ -207,7 +209,7 @@ class COCOEvaluator:
                 from yolox.layers import COCOeval_opt as COCOeval
             except ImportError:
                 from pycocotools.cocoeval import COCOeval
-
+                logger.info("INNER")
                 logger.warning("Use standard COCOeval.")
 
             cocoEval = COCOeval(cocoGt, cocoDt, annType[1])
@@ -219,4 +221,5 @@ class COCOEvaluator:
             info += redirect_string.getvalue()
             return cocoEval.stats[0], cocoEval.stats[1], info
         else:
+            logger.info("OUTER")
             return 0, 0, info

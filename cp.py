@@ -1,5 +1,62 @@
 import os
 '''
+check kinds of subtrainset
+'''
+# import json
+# from tqdm import trange
+# annfile = "datasets/COCO/annotations/instances_train2017-orig.json"
+# namefile = "datasets/COCO/names.txt"
+# namelst = {}
+# jsonlst = {}
+# with open(namefile, 'r') as f:
+#     names = f.readlines()
+#     for name in names:
+#         namelst[name[:-1]] = 1
+#
+# with open(annfile, 'r') as f:
+#     jsonlst = json.load(f)
+#
+# jsonlst['subimages'] = []
+# jsonlst['subanno'] = []
+#
+# for i in trange(len(jsonlst['images'])):
+#     if namelst.get(jsonlst['images'][i]['file_name'], 0):
+#         jsonlst['subimages'].append(jsonlst['images'][i])
+#
+# cnt = {}
+#
+# for i in trange(len(jsonlst['annotations'])):
+#     if namelst.get(str(jsonlst['annotations'][i]['image_id']).zfill(12)+'.jpg', 0):
+#         jsonlst['subanno'].append(jsonlst['annotations'][i])
+#         cnt[jsonlst['subanno'][-1]['category_id']] = 1
+#
+# for x in jsonlst:
+#     print(x, len(jsonlst[x]))
+#
+# print("-----------")
+#
+#
+#
+# subjsonlst = {}
+# for x in jsonlst:
+#     if x == 'subimages' or x == 'subanno':
+#         continue
+#     elif x == 'images':
+#         subjsonlst[x] = jsonlst['subimages']
+#     elif x == 'annotations':
+#         subjsonlst[x] = jsonlst['subanno']
+#     else:
+#         subjsonlst[x] = jsonlst[x]
+#     print(x, len(subjsonlst[x]))
+#
+# print(len(cnt), cnt)
+#
+# with open("instances_train2017.json", 'w') as f:
+#     f.write(json.dumps(subjsonlst))
+
+
+
+'''
 check subtrainset
 '''
 # print("RUNNING")
@@ -117,7 +174,7 @@ check coco
 '''
 # import numpy as np
 # from pycocotools.coco import COCO
-# annfile = "/home/tuf/Calculus/yolox/datasets/COCO/annotations/instances_train2017.json"
+# annfile = "datasets/COCO/annotations/instances_train2017.json"
 # print(annfile)
 # coco = COCO(annfile)
 #
@@ -146,4 +203,3 @@ move subtrainset
 #     if(filename[i][-3:] == "jpg"):
 #         shutil.move(srcdir + '/' + filename[i], targetdir)
 
-print("hello world")

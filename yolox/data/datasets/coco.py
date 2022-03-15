@@ -12,6 +12,8 @@ from pycocotools.coco import COCO
 from ..dataloading import get_yolox_datadir
 from .datasets_wrapper import Dataset
 
+import copy
+
 class COCODataset(Dataset):
     """
     COCO dataset class.
@@ -228,8 +230,13 @@ class COCODataset(Dataset):
             img_id (int): same as the input index. Used for evaluation.
         """
         img, target, img_info, img_id = self.pull_item(index)
-
+        target_o = target.copy()
         if self.preproc is not None: ## data\data_augment\valtransform
             for i in range(len(img)):
-                img[i], target = self.preproc(img[i], target, self.input_dim)
+                if i == 0:
+                    img[i], target = self.preproc(img[i], target, self.input_dim)
+                else:
+                    _ = target_o.copy()
+                    img[i], _ = self.preproc(img[i], _, self.input_dim)
+        # print("target", target)
         return np.stack(img), target, img_info, img_id

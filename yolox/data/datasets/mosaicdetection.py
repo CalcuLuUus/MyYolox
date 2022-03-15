@@ -11,7 +11,7 @@ from yolox.utils import adjust_box_anns, get_local_rank
 
 from ..data_augment import random_affine
 from .datasets_wrapper import Dataset
-
+import copy
 
 def get_mosaic_coordinate(mosaic_image, mosaic_index, xc, yc, w, h, input_h, input_w):
     # TODO update doc
@@ -156,8 +156,14 @@ class MosaicDetection(Dataset):
         else:
             self._dataset._input_dim = self.input_dim
             img, label, img_info, img_id = self._dataset.pull_item(idx)
-            img, label = self.preproc(img, label, self.input_dim)
-            return img, label, img_info, img_id
+            label_o = label.copy()
+            for i in range(len(img)):
+                if i == 0:
+                    img[i], label = self.preproc(img[i], label, self.input_dim)
+                else:
+                    _ = label_o.copy()
+                    img[i], _ = self.preproc(img[i], _, self.input_dim)
+            return np.stack(img), label, img_info, img_id
 
     def mixup(self, origin_img, origin_labels, input_dim):
         jit_factor = random.uniform(*self.mixup_scale)

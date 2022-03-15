@@ -38,6 +38,7 @@ def postprocess(prediction, num_classes, conf_thre=0.7, nms_thre=0.45, class_agn
     prediction[:, :, :4] = box_corner[:, :, :4]
 
     output = [None for _ in range(len(prediction))]
+    # print("prediction", prediction.shape, prediction[0].size(0))
     for i, image_pred in enumerate(prediction):
 
         # If none are remaining => process next image
@@ -50,6 +51,7 @@ def postprocess(prediction, num_classes, conf_thre=0.7, nms_thre=0.45, class_agn
         # Detections ordered as (x1, y1, x2, y2, obj_conf, class_conf, class_pred)
         detections = torch.cat((image_pred[:, :5], class_conf, class_pred.float()), 1)
         detections = detections[conf_mask]
+        # print("det", detections.shape)
         if not detections.size(0):
             continue
 
