@@ -97,6 +97,7 @@ class COCOEvaluator:
         for cur_iter, (imgs, _, info_imgs, ids) in enumerate(
             progress_bar(self.dataloader)
         ):
+            # print("img:{}\ninfo_imgs:{}*{}\nids:{}".format(imgs.shape, len(info_imgs) , info_imgs, ids.shape))
             with torch.no_grad():
                 imgs = imgs.type(tensor_type)
 
@@ -108,7 +109,7 @@ class COCOEvaluator:
                 outputs = model(imgs)
                 if decoder is not None:
                     outputs = decoder(outputs, dtype=outputs.type())
-
+    
                 if is_time_record:
                     infer_end = time_synchronized()
                     inference_time += infer_end - start

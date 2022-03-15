@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 # Copyright (c) 2014-2021 Megvii Inc. All rights reserved.
 
+import torch
 import torch.nn as nn
 
 from .yolo_head import YOLOXHead
@@ -25,9 +26,50 @@ class YOLOX(nn.Module):
         self.backbone = backbone
         self.head = head
 
+        channels = [128, 256, 512] # yolox-s 0.5*width
+        self.process_backbone = nn.ModuleList()
+        for channel in channels:
+            self.process_backbone.append(
+                nn.Sequential(
+                    nn.Conv2d(
+                        in_channels=channel*5,
+                        out_channels=channel*2,
+                        kernel_size=1
+                    ),
+                    nn.BatchNorm2d(channel*2),
+                    nn.SiLU(),
+                    nn.Conv2d(
+                        in_channels=channel*2,
+                        out_channels=channel,
+                        kernel_size=1
+                    ),
+                    nn.BatchNorm2d(channel),
+                    nn.SiLU()
+                )
+            )
+
     def forward(self, x, targets=None):
         # fpn output content features of [dark3, dark4, dark5]
-        fpn_outs = self.backbone(x)
+        # fpn_outs = self.backbone(x)
+        '''
+        backbone()
+        Args:
+            x: tensor (3*640*640)
+
+        Returns: (256, 80, 80) (512, 40, 40) (1024, 20, 20)
+        '''
+        fpn_outs = [[] for i in range(3)] # 5 * [(256, 80, 80) (512, 40, 40) (1024, 20, 20)]
+        for i in range(x.shape[1]): # x.shape[1] : number of images n*[5*(3*640*640)]
+            ret1, ret2, ret3 = self.backbone(x[:, i])
+            fpn_outs[0].append(ret1)
+            fpn_outs[1].append(ret2)
+            fpn_outs[2].append(ret3)
+
+        for i in range(3):
+            fpn_outs[i] = torch.cat(fpn_outs[i], dim=1)
+            fpn_outs[i] = self.process_backbone[i](fpn_outs[i])
+
+        fpn_outs = tuple(fpn_outs)
 
         if self.training:
             assert targets is not None

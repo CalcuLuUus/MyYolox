@@ -12,7 +12,6 @@ from pycocotools.coco import COCO
 from ..dataloading import get_yolox_datadir
 from .datasets_wrapper import Dataset
 
-
 class COCODataset(Dataset):
     """
     COCO dataset class.
@@ -175,11 +174,9 @@ class COCODataset(Dataset):
             (int(per_img.shape[1] * r), int(per_img.shape[0] * r)),
             interpolation=cv2.INTER_LINEAR,
         ).astype(np.uint8) for per_img in img]
-        return np.stack(resized_img)
+        return resized_img
 
     def load_image(self, index):
-        # with open("debug/idxToAnno.txt", "a") as f:
-        #     f.write("idx = {}, name = {}\n".format(index, self.annotations[index][3]))
         file_name = self.annotations[index][3]
         img_file = os.path.join(self.data_dir, self.name, file_name)  # COCO/val2017/
         '''
@@ -193,7 +190,7 @@ class COCODataset(Dataset):
         for img_name in img_names:
             whole_name = os.path.join(img_file, img_name)
             img.append(cv2.imread(whole_name))
-        return np.stack(img)
+        return img
 
     '''
     need modify
@@ -231,8 +228,8 @@ class COCODataset(Dataset):
             img_id (int): same as the input index. Used for evaluation.
         """
         img, target, img_info, img_id = self.pull_item(index)
-        target = np.stack([target for i in range(len(img))])
-        if self.preproc is not None:  ## data\data_augment\valtransform
+
+        if self.preproc is not None: ## data\data_augment\valtransform
             for i in range(len(img)):
-                img[i], target[i] = self.preproc(img[i], target[i], self.input_dim)
-        return img, target, img_info, img_id
+                img[i], target = self.preproc(img[i], target, self.input_dim)
+        return np.stack(img), target, img_info, img_id
