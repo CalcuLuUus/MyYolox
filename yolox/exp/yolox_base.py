@@ -205,27 +205,27 @@ class Exp(BaseExp):
             pg0, pg1, pg2 = [], [], []  # optimizer parameter groups
 
             for k, v in self.model.named_modules():
-                if k.find("process_backbone")+1:
-                    if hasattr(v, "bias") and isinstance(v.bias, nn.Parameter):
-                        pg2.append(v.bias)  # biases
-                    if isinstance(v, nn.BatchNorm2d) or "bn" in k:
-                        pg0.append(v.weight)  # no decay
-                    elif hasattr(v, "weight") and isinstance(v.weight, nn.Parameter):
-                        pg1.append(v.weight)  # apply decay
+                # if k.find("process_backbone")+1:
+                if hasattr(v, "bias") and isinstance(v.bias, nn.Parameter):
+                    pg2.append(v.bias)  # biases
+                if isinstance(v, nn.BatchNorm2d) or "bn" in k:
+                    pg0.append(v.weight)  # no decay
+                elif hasattr(v, "weight") and isinstance(v.weight, nn.Parameter):
+                    pg1.append(v.weight)  # apply decay
 
             optimizer = torch.optim.SGD(
-                pg0, lr=lr, momentum=self.momentum, nesterov=True
+                filter(lambda p: p.requires_grad, pg0), lr=lr, momentum=self.momentum, nesterov=True
             )
             optimizer.add_param_group(
-                {"params": pg1, "weight_decay": self.weight_decay}
+                {"params": filter(lambda p: p.requires_grad, pg1), "weight_decay": self.weight_decay}
             )  # add pg1 with weight_decay
-            optimizer.add_param_group({"params": pg2})
+            optimizer.add_param_group({"params": filter(lambda p: p.requires_grad, pg2)})
             self.optimizer = optimizer
-
 
             # for k, v in self.model.named_parameters():
             #     if v.requires_grad:
             #         print(k)
+
 
         return self.optimizer
 

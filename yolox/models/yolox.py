@@ -26,11 +26,8 @@ class YOLOX(nn.Module):
         self.backbone = backbone
         for p in self.parameters():
             p.requires_grad = False
-        self.head = head
 
-        ## and yolox_head 144 init_head() setting requiers_grad=False
-        # for p in self.parameters():
-        #     p.requires_grad = False
+        self.head = head
 
         channels = [128, 256, 512]  # yolox-s 0.5*width
         self.process_backbone = nn.ModuleList()
