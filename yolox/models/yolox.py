@@ -35,7 +35,7 @@ class YOLOX(nn.Module):
             self.process_backbone.append(
                 nn.Sequential(
                     nn.Conv2d(
-                        in_channels=channel * 5,
+                        in_channels=channel * 4,
                         out_channels=channel,
                         kernel_size=1
                     ),
@@ -57,7 +57,7 @@ class YOLOX(nn.Module):
         Returns: (256, 80, 80) (512, 40, 40) (1024, 20, 20)
         '''
         fpn_outs = [[] for i in range(3)] # 5 * [(256, 80, 80) (512, 40, 40) (1024, 20, 20)]
-        for i in range(x.shape[1]): # x.shape[1] : number of images n*[5*(3*640*640)]
+        for i in range(1, x.shape[1]): # x.shape[1] : number of images n*[5*(3*640*640)]
             ret1, ret2, ret3 = self.backbone(x[:, i])
             fpn_outs[0].append(ret1)
             fpn_outs[1].append(ret2)
@@ -66,6 +66,11 @@ class YOLOX(nn.Module):
         for i in range(3):
             fpn_outs[i] = torch.cat(fpn_outs[i], dim=1)
             fpn_outs[i] = self.process_backbone[i](fpn_outs[i])
+
+        ret_o_1, ret_o_2, ret_o_3 = self.backbone(x[:, 0])
+        fpn_outs[0] += (ret_o_1)
+        fpn_outs[1] += (ret_o_2)
+        fpn_outs[2] += (ret_o_3)
 
         fpn_outs = tuple(fpn_outs)
 

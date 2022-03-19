@@ -1,6 +1,31 @@
 # YOLOX for myself
 
-## second version.v1 : success
+## second version.v2
+
+- upload: 2022-3-18 9:00
+- fine tunning on yolox-s.pth / 30 epoches
+- add a conv between backbone and head
+- backbone: requires_grad :False
+- torch.optim.SGD params: only process_backbone
+
+Average forward time: 18.66 ms, Average NMS time: 1.49 ms, Average inference time: 20.15 ms
+
+| AP/AR                  | data                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.354  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.541     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.380     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.186 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.400 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.472 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.301   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.490  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.532  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.327 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.590 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.669 |
+
+## second version.v1
 
 - upload: 2022-3-17 10:00
 - fine tunning on yolox-s.pth / 30 epoches

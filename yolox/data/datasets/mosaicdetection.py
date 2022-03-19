@@ -11,7 +11,7 @@ from yolox.utils import adjust_box_anns, get_local_rank
 
 from ..data_augment import random_affine
 from .datasets_wrapper import Dataset
-import copy
+
 
 def get_mosaic_coordinate(mosaic_image, mosaic_index, xc, yc, w, h, input_h, input_w):
     # TODO update doc
@@ -77,8 +77,94 @@ class MosaicDetection(Dataset):
 
     @Dataset.mosaic_getitem
     def __getitem__(self, idx):
+        # if self.enable_mosaic and random.random() < self.mosaic_prob:
+        #     mosaic_labels = []
+        #     input_dim = self._dataset.input_dim
+        #     input_h, input_w = input_dim[0], input_dim[1]
+        #
+        #     # yc, xc = s, s  # mosaic center x, y
+        #     yc = int(random.uniform(0.5 * input_h, 1.5 * input_h))
+        #     xc = int(random.uniform(0.5 * input_w, 1.5 * input_w))
+        #
+        #     # 3 additional image indices
+        #     indices = [idx] + [random.randint(0, len(self._dataset) - 1) for _ in range(3)]
+        #
+        #     for i_mosaic, index in enumerate(indices):
+        #         img, _labels, _, img_id = self._dataset.pull_item(index)
+        #         img = img[random.randint(0, len(img))]
+        #         h0, w0 = img.shape[:2]  # orig hw
+        #         scale = min(1. * input_h / h0, 1. * input_w / w0)
+        #         img = cv2.resize(
+        #             img, (int(w0 * scale), int(h0 * scale)), interpolation=cv2.INTER_LINEAR
+        #         )
+        #         # generate output mosaic image
+        #         (h, w, c) = img.shape[:3]
+        #         if i_mosaic == 0:
+        #             mosaic_img = np.full((input_h * 2, input_w * 2, c), 114, dtype=np.uint8)
+        #
+        #         # suffix l means large image, while s means small image in mosaic aug.
+        #         (l_x1, l_y1, l_x2, l_y2), (s_x1, s_y1, s_x2, s_y2) = get_mosaic_coordinate(
+        #             mosaic_img, i_mosaic, xc, yc, w, h, input_h, input_w
+        #         )
+        #
+        #         mosaic_img[l_y1:l_y2, l_x1:l_x2] = img[s_y1:s_y2, s_x1:s_x2]
+        #         padw, padh = l_x1 - s_x1, l_y1 - s_y1
+        #
+        #         labels = _labels.copy()
+        #         # Normalized xywh to pixel xyxy format
+        #         if _labels.size > 0:
+        #             labels[:, 0] = scale * _labels[:, 0] + padw
+        #             labels[:, 1] = scale * _labels[:, 1] + padh
+        #             labels[:, 2] = scale * _labels[:, 2] + padw
+        #             labels[:, 3] = scale * _labels[:, 3] + padh
+        #         mosaic_labels.append(labels)
+        #
+        #     if len(mosaic_labels):
+        #         mosaic_labels = np.concatenate(mosaic_labels, 0)
+        #         np.clip(mosaic_labels[:, 0], 0, 2 * input_w, out=mosaic_labels[:, 0])
+        #         np.clip(mosaic_labels[:, 1], 0, 2 * input_h, out=mosaic_labels[:, 1])
+        #         np.clip(mosaic_labels[:, 2], 0, 2 * input_w, out=mosaic_labels[:, 2])
+        #         np.clip(mosaic_labels[:, 3], 0, 2 * input_h, out=mosaic_labels[:, 3])
+        #
+        #     mosaic_img, mosaic_labels = random_affine(
+        #         mosaic_img,
+        #         mosaic_labels,
+        #         target_size=(input_w, input_h),
+        #         degrees=self.degrees,
+        #         translate=self.translate,
+        #         scales=self.scale,
+        #         shear=self.shear,
+        #     )
+        #
+        #     # -----------------------------------------------------------------
+        #     # CopyPaste: https://arxiv.org/abs/2012.07177
+        #     # -----------------------------------------------------------------
+        #     if (
+        #         self.enable_mixup
+        #         and not len(mosaic_labels) == 0
+        #         and random.random() < self.mixup_prob
+        #     ):
+        #         mosaic_img, mosaic_labels = self.mixup(mosaic_img, mosaic_labels, self.input_dim)
+        #     mix_img, padded_labels = self.preproc(mosaic_img, mosaic_labels, self.input_dim)
+        #     img_info = (mix_img.shape[1], mix_img.shape[0])
+        #
+        #     # -----------------------------------------------------------------
+        #     # img_info and img_id are not used for training.
+        #     # They are also hard to be specified on a mosaic image.
+        #     # -----------------------------------------------------------------
+        #     return mix_img, padded_labels, img_info, img_id
+        #
+        # else:
+        #     self._dataset._input_dim = self.input_dim
+        #     img, label, img_info, img_id = self._dataset.pull_item(idx)
+        #     img, label = self.preproc(img, label, self.input_dim)
+        #     return img, label, img_info, img_id
+
+
+        '''
+        每个平滑强度一张mosaic img
+        '''
         if self.enable_mosaic and random.random() < self.mosaic_prob:
-            mosaic_labels = []
             input_dim = self._dataset.input_dim
             input_h, input_w = input_dim[0], input_dim[1]
 
@@ -89,51 +175,74 @@ class MosaicDetection(Dataset):
             # 3 additional image indices
             indices = [idx] + [random.randint(0, len(self._dataset) - 1) for _ in range(3)]
 
+            mosaic_img = [None for i in range(5)]
+
             for i_mosaic, index in enumerate(indices):
                 img, _labels, _, img_id = self._dataset.pull_item(index)
-                h0, w0 = img.shape[:2]  # orig hw
-                scale = min(1. * input_h / h0, 1. * input_w / w0)
-                img = cv2.resize(
-                    img, (int(w0 * scale), int(h0 * scale)), interpolation=cv2.INTER_LINEAR
-                )
-                # generate output mosaic image
-                (h, w, c) = img.shape[:3]
-                if i_mosaic == 0:
-                    mosaic_img = np.full((input_h * 2, input_w * 2, c), 114, dtype=np.uint8)
 
-                # suffix l means large image, while s means small image in mosaic aug.
-                (l_x1, l_y1, l_x2, l_y2), (s_x1, s_y1, s_x2, s_y2) = get_mosaic_coordinate(
-                    mosaic_img, i_mosaic, xc, yc, w, h, input_h, input_w
-                )
+                gt, img_smo = [img[0]], img[1:] # different intensities of images
+                random.shuffle((img_smo))
+                img = gt + img_smo
 
-                mosaic_img[l_y1:l_y2, l_x1:l_x2] = img[s_y1:s_y2, s_x1:s_x2]
-                padw, padh = l_x1 - s_x1, l_y1 - s_y1
+                for i in range(len(img)): # i = different force
+                    h0, w0 = img[i].shape[:2]  # orig hw
+                    scale = min(1. * input_h / h0, 1. * input_w / w0)
+                    img[i] = cv2.resize(
+                        img[i], (int(w0 * scale), int(h0 * scale)), interpolation=cv2.INTER_LINEAR
+                    )
+                    # generate output mosaic image
+                    (h, w, c) = img[i].shape[:3]
+                    if i_mosaic == 0:
+                        mosaic_img[i] = np.full((input_h * 2, input_w * 2, c), 114, dtype=np.uint8)
 
-                labels = _labels.copy()
-                # Normalized xywh to pixel xyxy format
-                if _labels.size > 0:
-                    labels[:, 0] = scale * _labels[:, 0] + padw
-                    labels[:, 1] = scale * _labels[:, 1] + padh
-                    labels[:, 2] = scale * _labels[:, 2] + padw
-                    labels[:, 3] = scale * _labels[:, 3] + padh
-                mosaic_labels.append(labels)
+                    # suffix l means large image, while s means small image in mosaic aug.
+                    (l_x1, l_y1, l_x2, l_y2), (s_x1, s_y1, s_x2, s_y2) = get_mosaic_coordinate(
+                        mosaic_img[i], i_mosaic, xc, yc, w, h, input_h, input_w
+                    )
 
-            if len(mosaic_labels):
-                mosaic_labels = np.concatenate(mosaic_labels, 0)
-                np.clip(mosaic_labels[:, 0], 0, 2 * input_w, out=mosaic_labels[:, 0])
-                np.clip(mosaic_labels[:, 1], 0, 2 * input_h, out=mosaic_labels[:, 1])
-                np.clip(mosaic_labels[:, 2], 0, 2 * input_w, out=mosaic_labels[:, 2])
-                np.clip(mosaic_labels[:, 3], 0, 2 * input_h, out=mosaic_labels[:, 3])
+                    mosaic_img[i][l_y1:l_y2, l_x1:l_x2] = img[i][s_y1:s_y2, s_x1:s_x2]
+                    padw, padh = l_x1 - s_x1, l_y1 - s_y1
 
-            mosaic_img, mosaic_labels = random_affine(
-                mosaic_img,
-                mosaic_labels,
-                target_size=(input_w, input_h),
-                degrees=self.degrees,
-                translate=self.translate,
-                scales=self.scale,
-                shear=self.shear,
-            )
+                    labels = _labels.copy()
+                    # Normalized xywh to pixel xyxy format
+                    mosaic_labels = []
+                    if _labels.size > 0:
+                        labels[:, 0] = scale * _labels[:, 0] + padw
+                        labels[:, 1] = scale * _labels[:, 1] + padh
+                        labels[:, 2] = scale * _labels[:, 2] + padw
+                        labels[:, 3] = scale * _labels[:, 3] + padh
+                    mosaic_labels.append(labels)
+
+                if len(mosaic_labels):
+                    mosaic_labels = np.concatenate(mosaic_labels, 0)
+                    np.clip(mosaic_labels[:, 0], 0, 2 * input_w, out=mosaic_labels[:, 0])
+                    np.clip(mosaic_labels[:, 1], 0, 2 * input_h, out=mosaic_labels[:, 1])
+                    np.clip(mosaic_labels[:, 2], 0, 2 * input_w, out=mosaic_labels[:, 2])
+                    np.clip(mosaic_labels[:, 3], 0, 2 * input_h, out=mosaic_labels[:, 3])
+
+            mosaic_labels_o = mosaic_labels.copy()
+            for i in range(len(mosaic_img)):
+                if i == 0:
+                    mosaic_img[i], mosaic_labels = random_affine(
+                        mosaic_img[i],
+                        mosaic_labels,
+                        target_size=(input_w, input_h),
+                        degrees=self.degrees,
+                        translate=self.translate,
+                        scales=self.scale,
+                        shear=self.shear,
+                    )
+                else:
+                    _ = mosaic_labels_o.copy()
+                    mosaic_img[i], _ = random_affine(
+                        mosaic_img[i],
+                        _,
+                        target_size=(input_w, input_h),
+                        degrees=self.degrees,
+                        translate=self.translate,
+                        scales=self.scale,
+                        shear=self.shear,
+                    )
 
             # -----------------------------------------------------------------
             # CopyPaste: https://arxiv.org/abs/2012.07177
@@ -143,15 +252,31 @@ class MosaicDetection(Dataset):
                 and not len(mosaic_labels) == 0
                 and random.random() < self.mixup_prob
             ):
-                mosaic_img, mosaic_labels = self.mixup(mosaic_img, mosaic_labels, self.input_dim)
-            mix_img, padded_labels = self.preproc(mosaic_img, mosaic_labels, self.input_dim)
-            img_info = (mix_img.shape[1], mix_img.shape[0])
+                mosaic_labels_o = mosaic_labels.copy()
+                for i in range(len(mosaic_img)):
+                    # print(type(mosaic_img), type(mosaic_img[i]), mosaic_img[i].shape)
+                    if i == 0:
+                        mosaic_img[i], mosaic_labels = self.mixup(mosaic_img[i], mosaic_labels, self.input_dim)
+                    else:
+                        _ = mosaic_labels_o.copy()
+                        mosaic_img[i], _ = self.mixup(mosaic_img[i], _, self.input_dim)
+
+            mix_img = mosaic_img
+            padded_labels = None
+            mosaic_labels_o = mosaic_labels.copy()
+            for i in range(len(mosaic_img)):
+                if i == 0:
+                    mix_img[i], padded_labels = self.preproc(mosaic_img[i], mosaic_labels_o, self.input_dim)
+                else:
+                    _ = mosaic_labels_o.copy()
+                    mix_img[i], _ = self.preproc(mosaic_img[i], _, self.input_dim)
+            img_info = (mix_img[0].shape[1], mix_img[0].shape[0])
 
             # -----------------------------------------------------------------
             # img_info and img_id are not used for training.
             # They are also hard to be specified on a mosaic image.
             # -----------------------------------------------------------------
-            return mix_img, padded_labels, img_info, img_id
+            return np.stack(mix_img), padded_labels, img_info, img_id
 
         else:
             self._dataset._input_dim = self.input_dim
@@ -165,6 +290,79 @@ class MosaicDetection(Dataset):
                     img[i], _ = self.preproc(img[i], _, self.input_dim)
             return np.stack(img), label, img_info, img_id
 
+    # def mixup(self, origin_img, origin_labels, input_dim):
+    #     jit_factor = random.uniform(*self.mixup_scale)
+    #     FLIP = random.uniform(0, 1) > 0.5
+    #     cp_labels = []
+    #     while len(cp_labels) == 0:
+    #         cp_index = random.randint(0, self.__len__() - 1)
+    #         cp_labels = self._dataset.load_anno(cp_index)
+    #     img, cp_labels, _, _ = self._dataset.pull_item(cp_index)
+    #
+    #     if len(img.shape) == 3:
+    #         cp_img = np.ones((input_dim[0], input_dim[1], 3), dtype=np.uint8) * 114
+    #     else:
+    #         cp_img = np.ones(input_dim, dtype=np.uint8) * 114
+    #
+    #     cp_scale_ratio = min(input_dim[0] / img.shape[0], input_dim[1] / img.shape[1])
+    #     resized_img = cv2.resize(
+    #         img,
+    #         (int(img.shape[1] * cp_scale_ratio), int(img.shape[0] * cp_scale_ratio)),
+    #         interpolation=cv2.INTER_LINEAR,
+    #     )
+    #
+    #     cp_img[
+    #         : int(img.shape[0] * cp_scale_ratio), : int(img.shape[1] * cp_scale_ratio)
+    #     ] = resized_img
+    #
+    #     cp_img = cv2.resize(
+    #         cp_img,
+    #         (int(cp_img.shape[1] * jit_factor), int(cp_img.shape[0] * jit_factor)),
+    #     )
+    #     cp_scale_ratio *= jit_factor
+    #
+    #     if FLIP:
+    #         cp_img = cp_img[:, ::-1, :]
+    #
+    #     origin_h, origin_w = cp_img.shape[:2]
+    #     target_h, target_w = origin_img.shape[:2]
+    #     padded_img = np.zeros(
+    #         (max(origin_h, target_h), max(origin_w, target_w), 3), dtype=np.uint8
+    #     )
+    #     padded_img[:origin_h, :origin_w] = cp_img
+    #
+    #     x_offset, y_offset = 0, 0
+    #     if padded_img.shape[0] > target_h:
+    #         y_offset = random.randint(0, padded_img.shape[0] - target_h - 1)
+    #     if padded_img.shape[1] > target_w:
+    #         x_offset = random.randint(0, padded_img.shape[1] - target_w - 1)
+    #     padded_cropped_img = padded_img[
+    #         y_offset: y_offset + target_h, x_offset: x_offset + target_w
+    #     ]
+    #
+    #     cp_bboxes_origin_np = adjust_box_anns(
+    #         cp_labels[:, :4].copy(), cp_scale_ratio, 0, 0, origin_w, origin_h
+    #     )
+    #     if FLIP:
+    #         cp_bboxes_origin_np[:, 0::2] = (
+    #             origin_w - cp_bboxes_origin_np[:, 0::2][:, ::-1]
+    #         )
+    #     cp_bboxes_transformed_np = cp_bboxes_origin_np.copy()
+    #     cp_bboxes_transformed_np[:, 0::2] = np.clip(
+    #         cp_bboxes_transformed_np[:, 0::2] - x_offset, 0, target_w
+    #     )
+    #     cp_bboxes_transformed_np[:, 1::2] = np.clip(
+    #         cp_bboxes_transformed_np[:, 1::2] - y_offset, 0, target_h
+    #     )
+    #
+    #     cls_labels = cp_labels[:, 4:5].copy()
+    #     box_labels = cp_bboxes_transformed_np
+    #     labels = np.hstack((box_labels, cls_labels))
+    #     origin_labels = np.vstack((origin_labels, labels))
+    #     origin_img = origin_img.astype(np.float32)
+    #     origin_img = 0.5 * origin_img + 0.5 * padded_cropped_img.astype(np.float32)
+    #
+    #     return origin_img.astype(np.uint8), origin_labels
     def mixup(self, origin_img, origin_labels, input_dim):
         jit_factor = random.uniform(*self.mixup_scale)
         FLIP = random.uniform(0, 1) > 0.5
@@ -173,6 +371,7 @@ class MosaicDetection(Dataset):
             cp_index = random.randint(0, self.__len__() - 1)
             cp_labels = self._dataset.load_anno(cp_index)
         img, cp_labels, _, _ = self._dataset.pull_item(cp_index)
+        img = img[random.randint(0, len(img)-1)]
 
         if len(img.shape) == 3:
             cp_img = np.ones((input_dim[0], input_dim[1], 3), dtype=np.uint8) * 114
