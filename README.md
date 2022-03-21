@@ -1,5 +1,54 @@
 # YOLOX for myself
 
+## Third version.v2
+
+- upload: 2022-3-20 9:00
+- fine tunning on yolox-s.pth / 30 epoches
+- add a conv between backbone and head
+- backbone: requires_grad :False
+- torch.optim.SGD params: process_backbone and head
+- new conv: structure like resnet -> 4 image backbone + 1 gt backbone
+- mosaic aug：on + shuffle images
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.349  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.534     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.377     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.182 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.400 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.465 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.298   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.483  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.525  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.321 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.584 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.653 |
+
+## Third version.v1
+
+- upload: 2022-3-20 9:00
+- fine tunning on yolox-s.pth / 30 epoches
+- add a conv between backbone and head
+- backbone: requires_grad :False
+- torch.optim.SGD params: process_backbone and head
+- new conv: structure like resnet -> 4 image backbone + 1 gt backbone
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.353  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.539     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.382     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.185 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.403 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.470 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.300   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.487  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.529  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.322 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.587 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.656 |
+
 ## second version.v3
 
 - upload: 2022-3-19 9:00
