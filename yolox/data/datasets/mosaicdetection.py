@@ -180,9 +180,9 @@ class MosaicDetection(Dataset):
             for i_mosaic, index in enumerate(indices):
                 img, _labels, _, img_id = self._dataset.pull_item(index)
 
-                # gt, img_smo = [img[0]], img[1:] # different intensities of images
-                # random.shuffle((img_smo))
-                # img = gt + img_smo
+                gt, img_smo = [img[0]], img[1:] # different intensities of images
+                random.shuffle((img_smo))
+                img = gt + img_smo
 
                 for i in range(len(img)): # i = different force
                     h0, w0 = img[i].shape[:2]  # orig hw
@@ -371,7 +371,7 @@ class MosaicDetection(Dataset):
             cp_index = random.randint(0, self.__len__() - 1)
             cp_labels = self._dataset.load_anno(cp_index)
         img, cp_labels, _, _ = self._dataset.pull_item(cp_index)
-        img = img[random.randint(0, len(img)-1)]
+        img = img[0]
 
         if len(img.shape) == 3:
             cp_img = np.ones((input_dim[0], input_dim[1], 3), dtype=np.uint8) * 114
