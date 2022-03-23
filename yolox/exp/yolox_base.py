@@ -51,7 +51,7 @@ class Exp(BaseExp):
         # --------------  training config --------------------- #
         self.warmup_epochs = 5
         ##
-        self.max_epoch = 30
+        self.max_epoch = 100
         self.warmup_lr = 0
         self.basic_lr_per_img = 0.01 / 64.0
         self.scheduler = "yoloxwarmcos"
@@ -214,12 +214,12 @@ class Exp(BaseExp):
                     pg1.append(v.weight)  # apply decay
 
             optimizer = torch.optim.SGD(
-                filter(lambda p: p.requires_grad, pg0), lr=lr, momentum=self.momentum, nesterov=True
+                pg0, lr=lr, momentum=self.momentum, nesterov=True
             )
             optimizer.add_param_group(
-                {"params": filter(lambda p: p.requires_grad, pg1), "weight_decay": self.weight_decay}
+                {"params": pg1, "weight_decay": self.weight_decay}
             )  # add pg1 with weight_decay
-            optimizer.add_param_group({"params": filter(lambda p: p.requires_grad, pg2)})
+            optimizer.add_param_group({"params": pg2})
             self.optimizer = optimizer
 
             # for k, v in self.model.named_parameters():

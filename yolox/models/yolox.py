@@ -24,8 +24,8 @@ class YOLOX(nn.Module):
             head = YOLOXHead(80)
 
         self.backbone = backbone
-        for p in self.parameters():
-            p.requires_grad = False
+        # for p in self.parameters():
+        #     p.requires_grad = False
 
         self.head = head
 
