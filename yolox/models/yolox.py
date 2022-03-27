@@ -4,6 +4,7 @@
 
 import torch
 import torch.nn as nn
+from torch.nn import functional as F
 
 from .yolo_head import YOLOXHead
 from .yolo_pafpn import YOLOPAFPN
@@ -71,6 +72,10 @@ class YOLOX(nn.Module):
         fpn_outs[0] += (ret_o_1)
         fpn_outs[1] += (ret_o_2)
         fpn_outs[2] += (ret_o_3)
+
+        fpn_outs[0] = F.silu(fpn_outs[0])
+        fpn_outs[1] = F.silu(fpn_outs[1])
+        fpn_outs[2] = F.silu(fpn_outs[2])
 
         fpn_outs = tuple(fpn_outs)
 

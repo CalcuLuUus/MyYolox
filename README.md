@@ -2,6 +2,30 @@
 
 ## EXP
 
+### expv1
+
+- batch size:2
+- device:1
+- yolox-s
+- epochs:100
+- no aug:15
+- shuffle mosaic aug
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.160  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.278     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.165     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.068 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.177 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.219 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.194   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.326  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.354  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.159 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.390 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.464 |
+
 ### baseline
 
 - batch size:2
@@ -9,21 +33,22 @@
 - yolox-s
 - epochs:100
 - no aug:15
+- 2022-03-21 22:00:44 - 2022-03-22 17:32:05
 
-| AP/AR                  | DARA                                                    |
+| AP/AR                  | DATA                                                    |
 | ---------------------- | ------------------------------------------------------- |
-| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.184  |
-| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.319     |
-| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.190     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= all \| maxDets=100 ] = 0.184   |
+| Average Precision (AP) | [ IoU=0.50 \| area= all \| maxDets=100 ] = 0.319        |
+| Average Precision (AP) | [ IoU=0.75 \| area= all \| maxDets=100 ] = 0.190        |
 | Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.092 |
 | Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.203 |
 | Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.243 |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.201   |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.322  |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.342  |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.166 |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.370 |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.442 |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= all \| maxDets= 1 ] = 0.201    |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= all \| maxDets= 10 ] = 0.322   |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= all \| maxDets=100 ] = 0.342   |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.166 |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.370 |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.442 |
 
 ## Third version.v3
 
@@ -37,20 +62,20 @@
 
 | AP/AR                  | DATA                                                    |
 | ---------------------- | ------------------------------------------------------- |
-| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.349  |
-| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.531     |
-| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.377     |
-| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.183 |
-| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.398 |
-| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.464 |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.296   |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.469  |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.499  |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.292 |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.552 |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.631 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.351  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.536     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.380     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.182 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.401 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.466 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.299   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.485  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.527  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.316 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.587 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.655 |
 
-## Third version.v2(aug best)
+## Third version.v2
 
 - upload: 2022-3-20 9:00
 - fine tunning on yolox-s.pth / 30 epoches
@@ -71,7 +96,7 @@
 | Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.298   |
 | Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.483  |
 | Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.525  |
-| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.321 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.322 |
 | Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.584 |
 | Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.653 |
 
