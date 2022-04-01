@@ -1,6 +1,42 @@
 # YOLOX for myself
 
+## 验证修改网络合理性实验
+
+baseline：30 epoches, no mosaic aug, device 1, batchsize 2
+
+exp1: 5 gt_input, 30 epochs, no mosaic, device 1, batchsize 2
+
+exp2: 5 process_data, 30 epochs, no mosaic, device 1, batchsize 2
+
+exp3: 5 process_data, 30 epochs, mosaic, device 1, batchsize2
+
+---
+
 ## EXP
+
+### expv2
+
+- batch size:2
+- device:1
+- yolox-s
+- epochs:100
+- no aug:15
+- no shuffle +  mosaic aug
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.153  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.270     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.156     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.063 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.171 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.210 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.192   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.319  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.347  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.150 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.381 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.453 |
 
 ### expv1
 

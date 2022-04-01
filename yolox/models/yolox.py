@@ -73,9 +73,9 @@ class YOLOX(nn.Module):
         fpn_outs[1] += (ret_o_2)
         fpn_outs[2] += (ret_o_3)
 
-        fpn_outs[0] = F.silu(fpn_outs[0])
-        fpn_outs[1] = F.silu(fpn_outs[1])
-        fpn_outs[2] = F.silu(fpn_outs[2])
+        # fpn_outs[0] = F.silu(fpn_outs[0])
+        # fpn_outs[1] = F.silu(fpn_outs[1])
+        # fpn_outs[2] = F.silu(fpn_outs[2])
 
         fpn_outs = tuple(fpn_outs)
 
