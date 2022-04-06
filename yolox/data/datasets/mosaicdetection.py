@@ -250,17 +250,17 @@ class MosaicDetection(Dataset):
                 and not len(mosaic_labels) == 0
                 and random.random() < self.mixup_prob
             ):
-                mosaic_labels_o = mosaic_labels.copy()
-                for i in range(len(mosaic_img)):
-                    # print(type(mosaic_img), type(mosaic_img[i]), mosaic_img[i].shape)
-                    if i == 0:
-                        mosaic_img[i], mosaic_labels = self.mixup(mosaic_img[i], mosaic_labels, self.input_dim)
-                    else:
-                        _ = mosaic_labels_o.copy()
-                        mosaic_img[i], _ = self.mixup(mosaic_img[i], _, self.input_dim)
+                mosaic_img, mosaic_labels = self.mixup(mosaic_img, mosaic_labels, self.input_dim)
+                # mosaic_labels_o = mosaic_labels.copy()
+                # for i in range(len(mosaic_img)):
+                #     # print(type(mosaic_img), type(mosaic_img[i]), mosaic_img[i].shape)
+                #     if i == 0:
+                #         mosaic_img[i], mosaic_labels = self.mixup(mosaic_img[i], mosaic_labels, self.input_dim)
+                #     else:
+                #         _ = mosaic_labels_o.copy()
+                #         mosaic_img[i], _ = self.mixup(mosaic_img[i], _, self.input_dim)
 
             mix_img = mosaic_img
-            padded_labels = None
             mosaic_labels_o = mosaic_labels.copy()
             for i in range(len(mosaic_img)):
                 if i == 0:
@@ -369,69 +369,71 @@ class MosaicDetection(Dataset):
             cp_index = random.randint(0, self.__len__() - 1)
             cp_labels = self._dataset.load_anno(cp_index)
         img, cp_labels, _, _ = self._dataset.pull_item(cp_index)
-        img = img[0]
 
-        if len(img.shape) == 3:
-            cp_img = np.ones((input_dim[0], input_dim[1], 3), dtype=np.uint8) * 114
-        else:
-            cp_img = np.ones(input_dim, dtype=np.uint8) * 114
 
-        cp_scale_ratio = min(input_dim[0] / img.shape[0], input_dim[1] / img.shape[1])
-        resized_img = cv2.resize(
-            img,
-            (int(img.shape[1] * cp_scale_ratio), int(img.shape[0] * cp_scale_ratio)),
-            interpolation=cv2.INTER_LINEAR,
-        )
+        for i in range(len(img)):
+            if len(img[i].shape) == 3:
+                cp_img = np.ones((input_dim[0], input_dim[1], 3), dtype=np.uint8) * 114
+            else:
+                cp_img = np.ones(input_dim, dtype=np.uint8) * 114
 
-        cp_img[
-            : int(img.shape[0] * cp_scale_ratio), : int(img.shape[1] * cp_scale_ratio)
-        ] = resized_img
-
-        cp_img = cv2.resize(
-            cp_img,
-            (int(cp_img.shape[1] * jit_factor), int(cp_img.shape[0] * jit_factor)),
-        )
-        cp_scale_ratio *= jit_factor
-
-        if FLIP:
-            cp_img = cp_img[:, ::-1, :]
-
-        origin_h, origin_w = cp_img.shape[:2]
-        target_h, target_w = origin_img.shape[:2]
-        padded_img = np.zeros(
-            (max(origin_h, target_h), max(origin_w, target_w), 3), dtype=np.uint8
-        )
-        padded_img[:origin_h, :origin_w] = cp_img
-
-        x_offset, y_offset = 0, 0
-        if padded_img.shape[0] > target_h:
-            y_offset = random.randint(0, padded_img.shape[0] - target_h - 1)
-        if padded_img.shape[1] > target_w:
-            x_offset = random.randint(0, padded_img.shape[1] - target_w - 1)
-        padded_cropped_img = padded_img[
-            y_offset: y_offset + target_h, x_offset: x_offset + target_w
-        ]
-
-        cp_bboxes_origin_np = adjust_box_anns(
-            cp_labels[:, :4].copy(), cp_scale_ratio, 0, 0, origin_w, origin_h
-        )
-        if FLIP:
-            cp_bboxes_origin_np[:, 0::2] = (
-                origin_w - cp_bboxes_origin_np[:, 0::2][:, ::-1]
+            cp_scale_ratio = min(input_dim[0] / img[i].shape[0], input_dim[1] / img[i].shape[1])
+            resized_img = cv2.resize(
+                img[i],
+                (int(img[i].shape[1] * cp_scale_ratio), int(img[i].shape[0] * cp_scale_ratio)),
+                interpolation=cv2.INTER_LINEAR,
             )
-        cp_bboxes_transformed_np = cp_bboxes_origin_np.copy()
-        cp_bboxes_transformed_np[:, 0::2] = np.clip(
-            cp_bboxes_transformed_np[:, 0::2] - x_offset, 0, target_w
-        )
-        cp_bboxes_transformed_np[:, 1::2] = np.clip(
-            cp_bboxes_transformed_np[:, 1::2] - y_offset, 0, target_h
-        )
 
-        cls_labels = cp_labels[:, 4:5].copy()
-        box_labels = cp_bboxes_transformed_np
-        labels = np.hstack((box_labels, cls_labels))
-        origin_labels = np.vstack((origin_labels, labels))
-        origin_img = origin_img.astype(np.float32)
-        origin_img = 0.5 * origin_img + 0.5 * padded_cropped_img.astype(np.float32)
+            cp_img[
+                : int(img.shape[0] * cp_scale_ratio), : int(img.shape[1] * cp_scale_ratio)
+            ] = resized_img
+
+            cp_img = cv2.resize(
+                cp_img,
+                (int(cp_img.shape[1] * jit_factor), int(cp_img.shape[0] * jit_factor)),
+            )
+            cp_scale_ratio *= jit_factor
+
+            if FLIP:
+                cp_img = cp_img[:, ::-1, :]
+
+            origin_h, origin_w = cp_img.shape[:2]
+            target_h, target_w = origin_img.shape[:2]
+            padded_img = np.zeros(
+                (max(origin_h, target_h), max(origin_w, target_w), 3), dtype=np.uint8
+            )
+            padded_img[:origin_h, :origin_w] = cp_img
+
+            x_offset, y_offset = 0, 0
+            if padded_img.shape[0] > target_h:
+                y_offset = random.randint(0, padded_img.shape[0] - target_h - 1)
+            if padded_img.shape[1] > target_w:
+                x_offset = random.randint(0, padded_img.shape[1] - target_w - 1)
+            padded_cropped_img = padded_img[
+                y_offset: y_offset + target_h, x_offset: x_offset + target_w
+            ]
+
+            cp_bboxes_origin_np = adjust_box_anns(
+                cp_labels[:, :4].copy(), cp_scale_ratio, 0, 0, origin_w, origin_h
+            )
+            if FLIP:
+                cp_bboxes_origin_np[:, 0::2] = (
+                    origin_w - cp_bboxes_origin_np[:, 0::2][:, ::-1]
+                )
+            cp_bboxes_transformed_np = cp_bboxes_origin_np.copy()
+            cp_bboxes_transformed_np[:, 0::2] = np.clip(
+                cp_bboxes_transformed_np[:, 0::2] - x_offset, 0, target_w
+            )
+            cp_bboxes_transformed_np[:, 1::2] = np.clip(
+                cp_bboxes_transformed_np[:, 1::2] - y_offset, 0, target_h
+            )
+
+            cls_labels = cp_labels[:, 4:5].copy()
+            box_labels = cp_bboxes_transformed_np
+            labels = np.hstack((box_labels, cls_labels))
+            if i == 0:
+                origin_labels = np.vstack((origin_labels, labels))
+            origin_img[i] = origin_img[i].astype(np.float32)
+            origin_img[i] = 0.5 * origin_img[i] + 0.5 * padded_cropped_img.astype(np.float32)
 
         return origin_img.astype(np.uint8), origin_labels
