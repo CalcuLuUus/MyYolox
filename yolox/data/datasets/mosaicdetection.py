@@ -361,6 +361,7 @@ class MosaicDetection(Dataset):
     #     origin_img = 0.5 * origin_img + 0.5 * padded_cropped_img.astype(np.float32)
     #
     #     return origin_img.astype(np.uint8), origin_labels
+
     def mixup(self, origin_img, origin_labels, input_dim):
         jit_factor = random.uniform(*self.mixup_scale)
         FLIP = random.uniform(0, 1) > 0.5
@@ -385,7 +386,7 @@ class MosaicDetection(Dataset):
             )
 
             cp_img[
-                : int(img.shape[0] * cp_scale_ratio), : int(img.shape[1] * cp_scale_ratio)
+                : int(img[i].shape[0] * cp_scale_ratio), : int(img[i].shape[1] * cp_scale_ratio)
             ] = resized_img
 
             cp_img = cv2.resize(
@@ -398,7 +399,7 @@ class MosaicDetection(Dataset):
                 cp_img = cp_img[:, ::-1, :]
 
             origin_h, origin_w = cp_img.shape[:2]
-            target_h, target_w = origin_img.shape[:2]
+            target_h, target_w = origin_img[i].shape[:2]
             padded_img = np.zeros(
                 (max(origin_h, target_h), max(origin_w, target_w), 3), dtype=np.uint8
             )
@@ -436,4 +437,6 @@ class MosaicDetection(Dataset):
             origin_img[i] = origin_img[i].astype(np.float32)
             origin_img[i] = 0.5 * origin_img[i] + 0.5 * padded_cropped_img.astype(np.float32)
 
-        return origin_img.astype(np.uint8), origin_labels
+        for i in range(len(origin_img)):
+            origin_img[i] = origin_img[i].astype(np.uint8)
+        return origin_img, origin_labels
