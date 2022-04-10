@@ -274,6 +274,7 @@ class MosaicDetection(Dataset):
             # img_info and img_id are not used for training.
             # They are also hard to be specified on a mosaic image.
             # -----------------------------------------------------------------
+            # print("mosaic", np.stack(mix_img).shape)
             return np.stack(mix_img), padded_labels, img_info, img_id
 
         else:

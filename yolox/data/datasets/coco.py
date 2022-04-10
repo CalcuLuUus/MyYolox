@@ -187,9 +187,9 @@ class COCODataset(Dataset):
         return img
         '''
         img = []
-        img_names = ["gt_input.png"] + ["retrain_structure_" + "{:.2f}".format(0.2 + i * 0.4) + ".png" for i in
-                                        range(0, 4)]
-        # img_names = ["gt_input.png"] + ["gt_input.png" for i in range(0, 4)]
+        # img_names = ["gt_input.png"] + ["retrain_structure_" + "{:.2f}".format(0.2 + i * 0.4) + ".png" for i in
+        #                                 range(0, 4)]
+        img_names = ["gt_input.png"] + ["gt_input.png" for i in range(0, 4)]
         for img_name in img_names:
             whole_name = os.path.join(img_file, img_name)
             img.append(cv2.imread(whole_name))
