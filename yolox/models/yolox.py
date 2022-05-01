@@ -25,24 +25,16 @@ class YOLOX(nn.Module):
             head = YOLOXHead(80)
 
         self.backbone = backbone
+
         # for p in self.parameters():
         #     p.requires_grad = False
 
         self.head = head
 
-        channels = [128, 256, 512]  # yolox-s 0.5*width
+        self.channels = [128, 256, 512]  # yolox-s 0.5*width
         self.process_backbone = nn.ModuleList()
-        for channel in channels:
+        for channel in self.channels:
             self.process_backbone.append(
-                # nn.Sequential(
-                #     nn.Conv2d(
-                #         in_channels=channel * 5,
-                #         out_channels=channel,
-                #         kernel_size=1
-                #     ),
-                #     nn.BatchNorm2d(channel),
-                #     nn.SiLU(inplace=True)
-                # )
                 nn.Sequential(
                     nn.Conv2d(
                         in_channels=5,
@@ -68,30 +60,20 @@ class YOLOX(nn.Module):
         '''
         fpn_outs = [[] for i in range(3)] # 5 * [(128, 80, 80) (256, 40, 40) (512, 20, 20)]
         for i in range(x.shape[1]): # x.shape[1] : number of images n*[5*(3*640*640)]
-            # print(x[:, i].shape)
             ret1, ret2, ret3 = self.backbone(x[:, i])
-            # print("ret", ret1.shape)
             fpn_outs[0].append(ret1)
             fpn_outs[1].append(ret2)
             fpn_outs[2].append(ret3)
 
         for i in range(3):
             fpn_outs[i] = torch.cat(fpn_outs[i], dim=1) #[1, 5*channels, size, size]
-            # fpn_outs[i] = self.process_backbone[i](fpn_outs[i])
+            img_size = fpn_outs[i].shape[-1]
+            # [1, 5, channels*size, size] --> [1, 5, channels, size*size]
+            # [1, 5, channels, size*size] --> [1, 1, channels, size*size]
+            fpn_outs[i] = self.process_backbone[i](fpn_outs[i].view(fpn_outs[i].shape[0], 5, -1, img_size*img_size))
+            # [1, 1, channels, size*size] --> [1, channels, size, size]
+            fpn_outs[i] = fpn_outs[i].view(fpn_outs[i].shape[0], -1, img_size, img_size)
 
-            # [1, 5, channels*size, size] --> [1, 1, channel*size, size]
-            fpn_outs[i] = self.process_backbone[0](fpn_outs[i].view(fpn_outs[i].shape[0], 5, -1, fpn_outs[i].shape[-1]))
-            # [1, 1, channel*size, size] --> [1, channels, size, size]
-            fpn_outs[i] = fpn_outs[i].view(fpn_outs[i].shape[0], -1, fpn_outs[i].shape[-1], fpn_outs[i].shape[-1])
-
-        # ret_o_1, ret_o_2, ret_o_3 = self.backbone(x[:, 0])
-        # fpn_outs[0] += (ret_o_1)
-        # fpn_outs[1] += (ret_o_2)
-        # fpn_outs[2] += (ret_o_3)
-
-        # fpn_outs[0] = F.silu(fpn_outs[0])
-        # fpn_outs[1] = F.silu(fpn_outs[1])
-        # fpn_outs[2] = F.silu(fpn_outs[2])
 
         fpn_outs = tuple(fpn_outs)
 

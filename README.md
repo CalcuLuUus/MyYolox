@@ -1,6 +1,78 @@
 # 	YOLOX for myself
 
+## Sixed （finetune50）
+
+### baseline
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.378  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.570     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.410     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.211 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.429 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.503 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.312   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.511  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.554  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.353 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.614 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.684 |
+
+### 1 backbone
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.364  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.554     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.395     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.201 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.429 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.496 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.307   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.501  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.544  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.344 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.606 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.683 |
+
+### 3 backbone
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.375  |
+| Average Precision (AP) | [ IoU=0.50   \| area=  all \| maxDets=100 ] = 0.567     |
+| Average Precision (AP) | [ IoU=0.75   \| area=  all \| maxDets=100 ] = 0.405     |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.210 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.425 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.501 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 1 ] = 0.311   |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets= 10 ] = 0.508  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=  all \| maxDets=100 ] = 0.551  |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.350 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.612 |
+| Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.682 |
+
+
+
 ## Fifth
+
+### Baseline
+
+| AP/AR                  | DATA                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= all \| maxDets=100 ] = 0.184   |
+| Average Precision (AP) | [ IoU=0.50 \| area= all \| maxDets=100 ] = 0.319        |
+| Average Precision (AP) | [ IoU=0.75 \| area= all \| maxDets=100 ] = 0.190        |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.092 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.203 |
+| Average Precision (AP) | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.243 |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= all \| maxDets= 1 ] = 0.201    |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= all \| maxDets= 10 ] = 0.322   |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= all \| maxDets=100 ] = 0.342   |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= small \| maxDets=100 ] = 0.166 |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.370 |
+| Average Recall (AR)    | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.442 |
 
 ### 1 backbone
 
@@ -69,7 +141,7 @@ baseline: 5 gt_data, 30 epochs, mosaic, device 1, batchsize2,modify ==》 1 * pr
 | Average Recall   (AR)  | [ IoU=0.50:0.95 \| area=medium \| maxDets=100 ] = 0.252 |
 | Average Recall   (AR)  | [ IoU=0.50:0.95 \| area= large \| maxDets=100 ] = 0.308 |
 
-exp: 5 process_data, 30 epochs, mosaic, device 1, batchsize2,modify ==》 1 * process_backbone
+exp:  process_data, 30 epochs, mosaic, device 1, batchsize2,modify ==》 1 * process_backbone
 
 | AP/AR                  | DATA                                                    |
 | ---------------------- | ------------------------------------------------------- |
